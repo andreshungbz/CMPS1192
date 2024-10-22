@@ -45,8 +45,8 @@ def server_program():
         data = connection.recv(max_bytes).decode() # receive data stream
 
         # exit when client closes the connection
-        if not data:
-            break
+        # if not data:
+        #     break
 
         # show client message on server terminal
         print(client_hostname + ": " + str(data))
