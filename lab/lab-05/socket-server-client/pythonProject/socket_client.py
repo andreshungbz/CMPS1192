@@ -4,7 +4,7 @@ def client_program():
     # Program Introduction
 
     print("-- Simple Socket Client Messaging Program --")
-    print("Ensure the server IP address is configured correctly")
+    print("Ensure the server IP address is configured correctly\n")
 
     # Client Information
 
@@ -19,7 +19,7 @@ def client_program():
     client_ip = next((ip for ip in ip_addresses if ip.startswith('10.0')), None) # choose ip starting with 10.0
     if not client_ip:
         raise ValueError("No IP address starting with '10.' found.") # error checking
-    print(f"Chosen Server IP Address: {client_ip}")
+    print(f"Chosen Server IP Address: {client_ip}\n")
 
     # Configure Server to Contact
 
