@@ -21,7 +21,8 @@ def client_program(ip, port):
     server_port = port # set server port to that client will connect to
     max_bytes = 2048  # set max bytes of packet
 
-    client_socket = socket.socket() # create socket
+    # create socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # AF_INET for IPv4, SOCK_STREAM for TCP
     client_socket.connect((server_ip, server_port)) # connect to server
 
     print("\n[Client Configuration]")

@@ -20,7 +20,8 @@ def server_program(port):
     server_port = port # set server port that will listen
     max_bytes = 2048 # set max bytes of packet
 
-    server_socket = socket.socket() # create socket
+    # create socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # AF_INET for IPv4, SOCK_STREAM for TCP
     server_socket.bind((server_ip, server_port)) # bind to socket the ip and port
     server_socket.listen(4) # set max number of simultaneous clients
 
