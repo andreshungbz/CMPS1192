@@ -32,7 +32,7 @@ def server_program(port):
     client, address = server_socket.accept() # accept new connection
     # store the client's hostname, which is its first message to the server
     client_hostname = client.recv(max_bytes).decode()
-    print(f"{client_hostname} connected with IP Address {str(address[0])} from Port {str(address[1])})\n")
+    print(f"{client_hostname} connected with IP Address {str(address[0])} from Port {str(address[1])}\n")
 
     # Server Loop
     while True:
