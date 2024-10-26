@@ -1,6 +1,51 @@
-import socket
 import argparse
+import socket
+import threading
 
+clients = []
+
+# Function to Handle Client
+def handle_client(client_socket, client_address, max_bytes):
+    # Initial Connection
+    client_hostname = client_socket.recv(max_bytes).decode()
+    print(f"{client_hostname} connected with IP Address {str(client_address[0])} from Port {str(client_address[1])}\n")
+
+    # Append to clients list
+    clients.append(client_socket)
+
+    # Thread Loop
+    while True:
+        try:
+            data = client_socket.recv(2048).decode()
+
+            if not data:
+                break
+
+            if data.lower().strip() == 'exit':
+                exit_message = f"[{client_hostname} has disconnected]"
+                print(exit_message)
+                broadcast(exit_message, client_socket, client_hostname)
+                break
+
+            print(f"{client_hostname}: {data}")
+            broadcast(data, client_socket, client_hostname)
+        except:
+            clients.remove(client_socket)
+            client_socket.close()
+            break
+
+# Function to Broadcast Message to All Clients
+def broadcast(message, client_socket, client_hostname):
+    formatted_message = f"\n{client_hostname}: {message}"
+    for client in clients:
+        if client != client_socket: # don't send message to self
+            try:
+                client.send(formatted_message.encode())
+            except:
+                clients.remove(client)
+                client.close()
+
+# Server Program
 def server_program(port):
     # Program Introduction
     print("-- Socket Messaging Server --")
@@ -8,7 +53,7 @@ def server_program(port):
     # Server Information
     server_hostname = socket.gethostname()  # server hostname
     ip_addresses = socket.gethostbyname_ex(server_hostname)[-1]  # list of server ip addresses
-    server_ip = next((ip for ip in ip_addresses if ip.startswith('10.0')), None)  # choose ip starting with 10.0
+    server_ip = next((ip for ip in ip_addresses if ip.startswith('192.168')), None)  # choose ip starting with 10.0
     if not server_ip:
         raise ValueError("No IP address starting with '10.' found.")  # error checking
 
@@ -28,32 +73,15 @@ def server_program(port):
     print("\n[Server Configuration]")
     print(f"Server listening on socket bound to IP Address {server_ip} and Port {server_port}")
 
-    # Initial Connection
     print("\nWaiting...\n")
-    client, address = server_socket.accept() # accept new connection
-    # store the client's hostname, which is its first message to the server
-    client_hostname = client.recv(max_bytes).decode()
-    print(f"{client_hostname} connected with IP Address {str(address[0])} from Port {str(address[1])}\n")
 
     # Server Loop
     while True:
-        data = client.recv(max_bytes).decode() # receive data stream
+        client_socket, client_address = server_socket.accept() # accept client connection
 
-        # exit when client closes the connection
-        if not data: # data being 0 bytes does this
-            break
-
-        # show client message in server terminal
-        print(client_hostname + ": " + str(data))
-
-        # write a message from the server and send to client
-        data = server_hostname + ": "
-        data += input(" -> ")
-        client.send(data.encode()) # convert string data into bytes object
-
-    # Closedown
-    client.close() # close client connection
-    server_socket.close() # close server socket
+        # start client thread
+        client_thread = threading.Thread(target=handle_client, args=(client_socket, client_address, max_bytes))
+        client_thread.start()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Messaging Server')

@@ -1,5 +1,17 @@
-import socket
 import argparse
+import socket
+import threading
+
+def receive_messages(client_socket, client_hostname, max_bytes):
+    while True:
+        try:
+            message = client_socket.recv(max_bytes).decode()
+            if not message:
+                break
+            print(message + f"\n{client_hostname}: ", end="")
+        except:
+            client_socket.close()
+            break
 
 def client_program(ip, port):
     # Program Introduction
@@ -8,7 +20,7 @@ def client_program(ip, port):
     # Client Information
     client_hostname = socket.gethostname()  # client hostname
     ip_addresses = socket.gethostbyname_ex(client_hostname)[-1]  # list of client ip addresses
-    client_ip = next((ip for ip in ip_addresses if ip.startswith('10.0')), None)  # choose ip starting with 10.0
+    client_ip = next((ip for ip in ip_addresses if ip.startswith('192.168')), None)  # choose ip starting with 10.0
     if not client_ip:
         raise ValueError("No IP address starting with '10.' found.")  # error checking
 
@@ -32,15 +44,15 @@ def client_program(ip, port):
     # send client host name to server as first message
     client_socket.send(client_hostname.encode())  # send hostname to server
 
+    # Start receive thread
+    receive_thread = threading.Thread(target=receive_messages, args=(client_socket, client_hostname, max_bytes))
+    receive_thread.start()
+
     # Client Loop
-    message = input(" -> ") # accept input
-    while message.lower().strip() != 'exit': # exit loop when the input is 'exit'
-        client_socket.send(message.encode()) # send message to server
-
-        data = client_socket.recv(max_bytes).decode() # receive server response
-        print(data) # show server message in client terminal
-
-        message = input(" -> ") # accept another input
+    message = input(f"{client_hostname}: ")
+    while message.lower().strip() != 'exit':
+        client_socket.send(message.encode())
+        message = input(f"{client_hostname}: ")
 
     # Closedown
     client_socket.close() # close client socket
