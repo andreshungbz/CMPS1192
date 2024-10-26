@@ -13,7 +13,7 @@ def receive_messages(client_socket, client_hostname, max_bytes):
                 break
             # just print the message without adding extra prompt
             print(f"\r{message}")  # \r to clear current line
-            print(f"{client_hostname}: ", end='', flush=True)  # reprint prompt
+            print(f"{client_hostname}: ", end="", flush=True)  # reprint prompt
         except:
             break
     client_socket.close()
