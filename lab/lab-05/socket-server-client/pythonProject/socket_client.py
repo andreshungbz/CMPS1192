@@ -1,3 +1,4 @@
+# socket_client.py
 import argparse
 import socket
 import threading
@@ -10,8 +11,8 @@ def receive_messages(client_socket, client_hostname, max_bytes):
                 break
             print(message + f"\n{client_hostname}: ", end="")
         except:
-            client_socket.close()
             break
+    client_socket.close()
 
 def client_program(ip, port):
     # Program Introduction
@@ -34,28 +35,33 @@ def client_program(ip, port):
     max_bytes = 2048  # set max bytes of packet
 
     # create socket
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # AF_INET for IPv4, SOCK_STREAM for TCP
-    client_socket.connect((server_ip, server_port)) # connect to server
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((server_ip, server_port))
 
     print("\n[Client Configuration]")
     print(f"Client with IP Address {client_ip} set to contact Server with IP Address {server_ip} on Port {server_port}\n")
 
     # Initial Connection
-    # send client host name to server as first message
-    client_socket.send(client_hostname.encode())  # send hostname to server
+    client_socket.send(client_hostname.encode())
 
     # Start receive thread
     receive_thread = threading.Thread(target=receive_messages, args=(client_socket, client_hostname, max_bytes))
+    receive_thread.daemon = True  # Make thread daemon so it exits when main thread exits
     receive_thread.start()
 
     # Client Loop
-    message = input(f"{client_hostname}: ")
-    while message.lower().strip() != 'exit':
-        client_socket.send(message.encode())
-        message = input(f"{client_hostname}: ")
-
-    # Closedown
-    client_socket.close() # close client socket
+    try:
+        while True:
+            message = input(f"{client_hostname}: ")
+            if message.lower().strip() == 'exit':
+                client_socket.send(message.encode())
+                break
+            client_socket.send(message.encode())
+    except:
+        pass
+    finally:
+        client_socket.close()
+        print("\nDisconnected from server.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Messaging Client')
