@@ -10,13 +10,13 @@ clients = []
 def handle_client(client_socket, client_address, max_bytes):
     # initial connection
     client_hostname = client_socket.recv(max_bytes).decode()
-    print(f"{client_hostname} connected with IP Address {str(client_address[0])} from Port {str(client_address[1])}\n")
+    print(f"{client_hostname} connected with IP Address {str(client_address[0])} from Port {str(client_address[1])}")
 
     # append to clients list
     clients.append(client_socket)
 
     # send join message to all clients
-    join_message = f"[{client_hostname} has joined the chat]"
+    join_message = f"[{client_hostname} has joined the chat]\n"
     print(join_message)
     broadcast(join_message, client_socket, client_hostname)
 
