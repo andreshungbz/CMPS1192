@@ -13,6 +13,11 @@ def handle_client(client_socket, client_address, max_bytes):
     # Append to clients list
     clients.append(client_socket)
 
+    # Send join message to all clients
+    join_message = f"[{client_hostname} has joined the chat]"
+    print(join_message)
+    broadcast(join_message, client_socket, client_hostname)
+
     # Thread Loop
     while True:
         try:
