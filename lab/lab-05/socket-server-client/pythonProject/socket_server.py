@@ -64,9 +64,9 @@ def server_program(port):
     ip_addresses = socket.gethostbyname_ex(server_hostname)[-1] # list of server ip addresses
 
     # edit to "192.168" or "10.0" accordingly
-    server_ip = next((ip for ip in ip_addresses if ip.startswith('192.168')), None)
+    server_ip = next((ip for ip in ip_addresses if ip.startswith('10.0')), None)
     if not server_ip:
-        raise ValueError("No IP address starting with '192.168' found.")
+        raise ValueError("No IP address starting with '10.0' found.")
 
     print("\n[Server Information]")
     print(f"Server Hostname: {server_hostname}")

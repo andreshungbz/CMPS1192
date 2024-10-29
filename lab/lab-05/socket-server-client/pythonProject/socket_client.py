@@ -28,9 +28,9 @@ def client_program(ip, port):
     ip_addresses = socket.gethostbyname_ex(client_hostname)[-1] # list of client ip addresses
 
     # edit to "192.168" or "10.0" accordingly
-    client_ip = next((ip for ip in ip_addresses if ip.startswith('192.168')), None)
+    client_ip = next((ip for ip in ip_addresses if ip.startswith('10.0')), None)
     if not client_ip:
-        raise ValueError("No IP address starting with '192.168' found.")
+        raise ValueError("No IP address starting with '10.0' found.")
 
     print("\n[Client Information]")
     print(f"Client Hostname: {client_hostname}")
